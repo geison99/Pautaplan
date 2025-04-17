@@ -11,6 +11,13 @@ st.set_page_config(layout="wide")
 # Dividir a página em 2 colunas com proporções 1:3
 col1, col2 = st.columns([1, 3])
 
+# Debug: Verifica se a chave privada foi carregada CORRETAMENTE
+if not st.secrets["gdrive"]["private_key"]:
+    st.error("CHAVE PRIVADA NÃO CARREGADA! Verifique os Secrets.")
+    st.stop()
+
+st.write("Chave privada carregada:", st.secrets["gdrive"]["private_key"][:50] + "...")  # Mostra início da chave
+
 arqGoogle = "https://docs.google.com/spreadsheets/d/1d2ZLE2hUSr2vIVcK06NodEt0podAnUXztibp3Y3-WDE/"
 
 # Debug: Verifique se as credenciais estão sendo carregadas corretamente
