@@ -5,34 +5,42 @@ from google.oauth2.service_account import Credentials
 import math
 from datetime import datetime, timedelta
 from google.auth.transport.requests import Request 
+import json  # Para debug
 
 st.set_page_config(layout="wide")
 # Dividir a página em 2 colunas com proporções 1:3
 col1, col2 = st.columns([1, 3])
 
-# ---- Nova Autenticação com gspread ----
 arqGoogle = "https://docs.google.com/spreadsheets/d/1d2ZLE2hUSr2vIVcK06NodEt0podAnUXztibp3Y3-WDE/"
 
+# Debug: Verifique se as credenciais estão sendo carregadas corretamente
 try:
+    st.write("Credenciais carregadas:", json.dumps({k: "***" if "private" in k else v for k, v in st.secrets["gdrive"].items()}, indent=2))
+    
     creds = Credentials.from_service_account_info(
-        st.secrets["gdrive"],
+        {
+            "type": st.secrets["gdrive"]["type"],
+            "project_id": st.secrets["gdrive"]["project_id"],
+            "private_key_id": st.secrets["gdrive"]["private_key_id"],
+            "private_key": st.secrets["gdrive"]["private_key"].replace("\\n", "\n"),
+            "client_email": st.secrets["gdrive"]["client_email"],
+            "client_id": st.secrets["gdrive"]["client_id"],
+            "token_uri": st.secrets["gdrive"]["token_uri"],
+        },
         scopes=["https://www.googleapis.com/auth/spreadsheets.readonly"]
     )
+    
+    # Força a geração do token
+    creds.refresh(Request())
+    
     gc = gspread.authorize(creds)
+    sheet = gc.open_by_url("SUA_URL").sheet1
+    st.success("✅ Autenticação bem-sucedida!")
     
-    # Abre a planilha
-    arquivo = gc.open_by_url(arqGoogle)
-    aba = arquivo.worksheet("Página1")  # Note: worksheet() em vez de worksheet_by_title()
-    data = aba.get_all_values()
-    
-    st.success("Planilha carregada com sucesso!")
-
 except Exception as e:
-    st.error(f"Erro ao acessar a planilha: {e}")
+    st.error(f"🔴 Falha crítica: {str(e)}")
     st.stop()
 
-
-arqGoogle = "https://docs.google.com/spreadsheets/d/1d2ZLE2hUSr2vIVcK06NodEt0podAnUXztibp3Y3-WDE/"
 arquivo = gc.open_by_url(arqGoogle)
 aba = arquivo.worksheet_by_title("Página1")
 data = aba.get_all_values()
