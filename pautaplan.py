@@ -11,24 +11,24 @@ st.set_page_config(layout="wide")
 col1, col2 = st.columns([1, 3])
 
 # ---- Nova Autenticação com gspread ----
-SHEET_URL = "https://docs.google.com/spreadsheets/d/1d2ZLE2hUSr2vIVcK06NodEt0podAnUXztibp3Y3-WDE/"
+arqGoogle = "https://docs.google.com/spreadsheets/d/1d2ZLE2hUSr2vIVcK06NodEt0podAnUXztibp3Y3-WDE/"
 
 try:
     creds = Credentials.from_service_account_info(
         st.secrets["gdrive"],
         scopes=["https://www.googleapis.com/auth/spreadsheets.readonly"]
     )
-    
-    # Força a atualização do token (só se necessário)
-    if not creds.valid:
-        creds.refresh(Request())  # Agora com a importação correta
-    
     gc = gspread.authorize(creds)
-    sheet = gc.open_by_url("SUA_URL_DA_PLANILHA").sheet1
-    st.success("Conexão bem-sucedida!")
     
+    # Abre a planilha
+    arquivo = gc.open_by_url(arqGoogle)
+    aba = arquivo.worksheet("Página1")  # Note: worksheet() em vez de worksheet_by_title()
+    data = aba.get_all_values()
+    
+    st.success("Planilha carregada com sucesso!")
+
 except Exception as e:
-    st.error(f"Erro na autenticação: {str(e)}")
+    st.error(f"Erro ao acessar a planilha: {e}")
     st.stop()
 
 
@@ -37,7 +37,7 @@ arquivo = gc.open_by_url(arqGoogle)
 aba = arquivo.worksheet_by_title("Página1")
 data = aba.get_all_values()
 df = pd.DataFrame(data)
-st.write("Primeiras linhas:", df.head(3))
+
 # configurações do banco de dados
 new_header = df.iloc[0] # separa  a primeira linha
 df = df[1:]
