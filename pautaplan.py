@@ -1,62 +1,31 @@
 import streamlit as st
 import pandas as pd
-import gspread
-from google.oauth2.service_account import Credentials
 import math
 from datetime import datetime, timedelta
-from google.auth.transport.requests import Request 
-import json  # Para debug
 
 st.set_page_config(layout="wide")
 # Dividir a página em 2 colunas com proporções 1:3
 col1, col2 = st.columns([1, 3])
 
-# Debug: Verifica se a chave privada foi carregada CORRETAMENTE
-if not st.secrets["gdrive"]["private_key"]:
-    st.error("CHAVE PRIVADA NÃO CARREGADA! Verifique os Secrets.")
-    st.stop()
+# 1. Carrega os dados do arquivo CSV local
+@st.cache_data  # Cache para melhor performance
+def load_data():
+    try:
+        # Converter durante a leitura (para colunas específicas)
+        df = pd.read_csv(
+            "prazos_audiencias.csv",
+            thousands='.',          # Define o PONTO como separador de milhar
+            decimal=',',            # Define a VÍRGULA como decimal (opcional para Brasil)
+            encoding='utf-8'        # Garante compatibilidade com caracteres especiais
+        )
+       
+        return df
+    except FileNotFoundError:
+        st.error("Arquivo 'prazos_audiencias.csv' não encontrado na pasta do app!")
+        st.stop()
 
-st.write("Chave privada carregada:", st.secrets["gdrive"]["private_key"][:50] + "...")  # Mostra início da chave
-
-arqGoogle = "https://docs.google.com/spreadsheets/d/1d2ZLE2hUSr2vIVcK06NodEt0podAnUXztibp3Y3-WDE/"
-
-# Debug: Verifique se as credenciais estão sendo carregadas corretamente
-try:
-    st.write("Credenciais carregadas:", json.dumps({k: "***" if "private" in k else v for k, v in st.secrets["gdrive"].items()}, indent=2))
-    
-    creds = Credentials.from_service_account_info(
-        {
-            "type": st.secrets["gdrive"]["type"],
-            "project_id": st.secrets["gdrive"]["project_id"],
-            "private_key_id": st.secrets["gdrive"]["private_key_id"],
-            "private_key": st.secrets["gdrive"]["private_key"].replace("\\n", "\n"),
-            "client_email": st.secrets["gdrive"]["client_email"],
-            "client_id": st.secrets["gdrive"]["client_id"],
-            "token_uri": st.secrets["gdrive"]["token_uri"],
-        },
-        scopes=["https://www.googleapis.com/auth/spreadsheets.readonly"]
-    )
-    
-    # Força a geração do token
-    creds.refresh(Request())
-    
-    gc = gspread.authorize(creds)
-    sheet = gc.open_by_url("SUA_URL").sheet1
-    st.success("✅ Autenticação bem-sucedida!")
-    
-except Exception as e:
-    st.error(f"🔴 Falha crítica: {str(e)}")
-    st.stop()
-
-arquivo = gc.open_by_url(arqGoogle)
-aba = arquivo.worksheet_by_title("Página1")
-data = aba.get_all_values()
-df = pd.DataFrame(data)
-
-# configurações do banco de dados
-new_header = df.iloc[0] # separa  a primeira linha
-df = df[1:]
-df.columns = new_header # define o nome do cabeçalho das colunas
+# 2. Uso no seu código (substitua a parte do Google Sheets)
+df = load_data()
 
 varas = ["ARARANGUÁ","1VT BALNEÁRIO CAMBORIÚ","2VT BALNEÁRIO CAMBORIÚ","1VT BLUMENAU","2VT BLUMENAU","3VT BLUMENAU","4VT BLUMENAU","1VT BRUSQUE","2VT BRUSQUE","CAÇADOR","CANOINHAS",
          "1VT CHAPECÓ","2VT CHAPECÓ","3VT CHAPECÓ","4VT CHAPECÓ","CONCÓRDIA","1VT CRICIÚMA","2VT CRICIÚMA","3VT CRICIÚMA","CURITIBANOS","1VT FLORIANÓPOLIS",
