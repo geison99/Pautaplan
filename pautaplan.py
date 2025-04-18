@@ -162,9 +162,18 @@ with col2:
             pz_atual_sem = prazo_num / 7
             qtd_adequar = qtd_nova_num * (pzo_aud_select / 7)
             novos_acum = (novos_pauta_sem_num - (qtd_nova_num - (qtd_aud_num/(prazo_num/7))))*(prazo_num/7)
-            tx_red = (qtd_nova_num - novos_pauta_sem_num)
-            tp_red_novos = (novos_acum-qtd_adequar) / tx_red        
+            tx_red = 1            
+            if qtd_nova_num > novos_pauta_sem_num:
+                tx_red = (qtd_nova_num - novos_pauta_sem_num)
+            else: 
+                st.error("A quantidade de audiências semanais sugerida é menor ou igual à quantidade de casos novos para a pauta, o que não causará redução do prazo. " \
+                    "Aumente a quantidade de audiências que SERÃO designadas semanalmente.")
+                st.stop()
             
+            tp_red_novos = (novos_acum-qtd_adequar) / tx_red
+           
+                
+        
             if (pz_atual_sem + tp_red_novos) < ((prazo_num - pzo_aud_select)/7):
                 tp_red_tot_sem = (prazo_num - pzo_aud_select)/7
             else:
@@ -178,7 +187,7 @@ with col2:
             tp_red_tot_meses = tp_red_tot_dias / 30
             aud_atual_sem = math.ceil(qtd_aud_num / pz_atual_sem)
             aud_aumento_semanal = qtd_nova_num - aud_atual_sem
-
+        
             # 1. Data atual
             data_atual = datetime.now().date()  # Apenas a data, sem horário
 
@@ -221,9 +230,9 @@ with col2:
             st.write(f"Como atualmente estão chegando {novos_pauta_sem_num} processos novos para incluir em pauta, estão sendo incluídos ao final do prazo.")
             st.write(f"No entanto, se aumentar a quantidade semanal de {aud_atual_sem} para {qtd_nova_num}, poderá incluir {aud_aumento_semanal} dos {novos_pauta_sem_num} que chegam novos, sobrando {novos_pauta_sem_num - aud_aumento_semanal} semanalmente para serem incluídos ao final.")
             st.write(f"Como as audiências já marcadas não serão antecipadas, ao final de {prazo_num} dias, todas as {qtd_aud_num} audiências serão realizadas, sobrando o acumulado de {novos_acum:.0f} audiências ({novos_pauta_sem_num - aud_aumento_semanal} X {prazo_num} / 7).")
-            st.write(f"Como continuam sendo designadas {qtd_nova_num} audiências por semana, e a quantidade nova que chega semanalmente é menor que essa quantia ({novos_pauta_sem_num}), são antecipadas {aud_aumento_semanal} audiências por semana, que antes eram marcadas ao final.") 
+            st.write(f"Como continuam sendo designadas {qtd_nova_num} audiências por semana, e a quantidade nova que chega semanalmente é menor que essa quantia ({novos_pauta_sem_num}), são antecipadas {novos_pauta_sem_num - aud_aumento_semanal} audiências por semana, que antes eram marcadas ao final.") 
             st.write(f"Assim, a unidade precisará de aproximadente {str(round(tp_red_tot_sem, 2)).replace('.', ',')} semanas, ou {int(tp_red_tot_dias)} dias, ou {str(round(tp_red_tot_meses, 2)).replace('.', ',')} meses para se adequar ao Provimento.")
-
+           
         else:
             st.error("Vara não encontrada no banco de dados.")
     else:
