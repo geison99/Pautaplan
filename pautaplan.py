@@ -3,7 +3,7 @@ import pandas as pd
 import math
 from datetime import datetime, timedelta
 
-st.set_page_config(layout="wide")
+st.set_page_config(layout="wide", page_icon="images/corina_ico.png")
 # Dividir a página em 2 colunas com proporções 1:3
 col1, col2 = st.columns([1, 3])
 
