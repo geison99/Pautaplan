@@ -226,11 +226,18 @@ with col2:
                 A ideia é aumentar a quantidade atual de audiências designadas por semana para poder reduzir o prazo máximo.                 
                 """                
             )
+            sobra = novos_pauta_sem_num - aud_aumento_semanal
+            if novos_pauta_sem_num - aud_aumento_semanal <= 0:
+                sobra = 0
+                novos_acum = 0
+            else: 
+                sobra = novos_pauta_sem_num - aud_aumento_semanal
+
             st.write(f"Se hoje há {qtd_aud_num} audiências designadas em um prazo máximo de {prazo_num} dias, quer dizer que em média são designadas {aud_atual_sem} audiências por semana.")
             st.write(f"Como atualmente estão chegando {novos_pauta_sem_num} processos novos para incluir em pauta, estão sendo incluídos ao final do prazo.")
-            st.write(f"No entanto, se aumentar a quantidade semanal de {aud_atual_sem} para {qtd_nova_num}, poderá incluir {aud_aumento_semanal} dos {novos_pauta_sem_num} que chegam novos, sobrando {novos_pauta_sem_num - aud_aumento_semanal} semanalmente para serem incluídos ao final.")
-            st.write(f"Como as audiências já marcadas não serão antecipadas, ao final de {prazo_num} dias, todas as {qtd_aud_num} audiências serão realizadas, sobrando o acumulado de {novos_acum:.0f} audiências ({novos_pauta_sem_num - aud_aumento_semanal} X {prazo_num} / 7).")
-            st.write(f"Como continuam sendo designadas {qtd_nova_num} audiências por semana, e a quantidade nova que chega semanalmente é menor que essa quantia ({novos_pauta_sem_num}), são antecipadas {novos_pauta_sem_num - aud_aumento_semanal} audiências por semana, que antes eram marcadas ao final.") 
+            st.write(f"No entanto, se aumentar a quantidade semanal de {aud_atual_sem} para {qtd_nova_num}, poderá incluir {aud_aumento_semanal} dos {novos_pauta_sem_num} que chegam novos, sobrando {sobra} semanalmente para serem incluídos ao final.")
+            st.write(f"Como as audiências já marcadas não serão antecipadas, ao final de {prazo_num} dias, todas as {qtd_aud_num} audiências serão realizadas, sobrando o acumulado de {novos_acum:.0f} audiências ({sobra} X {prazo_num} / 7).")
+            st.write(f"Como continuam sendo designadas {qtd_nova_num} audiências por semana, e a quantidade nova que chega semanalmente é menor que essa quantia ({novos_pauta_sem_num}), são antecipadas {sobra} audiências por semana, que antes eram marcadas ao final.") 
             st.write(f"Assim, a unidade precisará de aproximadente {str(round(tp_red_tot_sem, 2)).replace('.', ',')} semanas, ou {int(tp_red_tot_dias)} dias, ou {str(round(tp_red_tot_meses, 2)).replace('.', ',')} meses para se adequar ao Provimento.")
            
         else:
