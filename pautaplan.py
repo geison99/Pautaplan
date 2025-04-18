@@ -207,7 +207,7 @@ with col2:
             st.subheader("Resumo")
             st.write(f"Atualmente são realizadas, em média, {aud_atual_sem} audiências por semana na unidade.")
             st.write(f"Aumentando de {aud_atual_sem} para {qtd_nova_num} audiências, haverá incremento de {aud_aumento_semanal} por semana.")
-            st.write(f"Com isso, a unidade estará em conformidade com o prazo do Provimento em aproximadente {tp_red_tot_sem:.2f} semanas, ou {tp_red_tot_dias:.0f} dias, ou {tp_red_tot_meses:.2f} meses. {texto_recesso}")       
+            st.write(f"Com isso, a unidade estará em conformidade com o prazo do Provimento em aproximadente {str(round(tp_red_tot_sem, 2)).replace('.', ',')} semanas, ou {int(tp_red_tot_dias)} dias, ou {str(round(tp_red_tot_meses, 2)).replace('.', ',')} meses. {texto_recesso}")       
             
             st.divider()  # Barra horizontal padrão            
             st.subheader("Como o cálculo é feito")
@@ -222,7 +222,7 @@ with col2:
             st.write(f"No entanto, se aumentar a quantidade semanal de {aud_atual_sem} para {qtd_nova_num}, poderá incluir {aud_aumento_semanal} dos {novos_pauta_sem_num} que chegam novos, sobrando {novos_pauta_sem_num - aud_aumento_semanal} semanalmente para serem incluídos ao final.")
             st.write(f"Como as audiências já marcadas não serão antecipadas, ao final de {prazo_num} dias, todas as {qtd_aud_num} audiências serão realizadas, sobrando o acumulado de {novos_acum:.0f} audiências ({novos_pauta_sem_num - aud_aumento_semanal} X {prazo_num} / 7).")
             st.write(f"Como continuam sendo designadas {qtd_nova_num} audiências por semana, e a quantidade nova que chega semanalmente é menor que essa quantia ({novos_pauta_sem_num}), são antecipadas {aud_aumento_semanal} audiências por semana, que antes eram marcadas ao final.") 
-            st.write(f"Assim, a unidade precisará de aproximadente {tp_red_tot_sem:.2f} semanas, ou {tp_red_tot_dias:.0f} dias, ou {tp_red_tot_meses:.2f} meses para se adequar ao Provimento.")
+            st.write(f"Assim, a unidade precisará de aproximadente {str(round(tp_red_tot_sem, 2)).replace('.', ',')} semanas, ou {int(tp_red_tot_dias)} dias, ou {str(round(tp_red_tot_meses, 2)).replace('.', ',')} meses para se adequar ao Provimento.")
 
         else:
             st.error("Vara não encontrada no banco de dados.")
